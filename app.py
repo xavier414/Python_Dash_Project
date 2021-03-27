@@ -6,7 +6,7 @@ import dash_table as dt
 
 import pandas as pd
 
-app = dash.Dash(__name__, title="Final Dash Project")
+app = dash.Dash(__name__, title="White Wine Quality Dash")
 
 markdown_text = '''
 This data set assesses the quality of 4898 white wine variants from the Portuguese Vinho Verde region based on 11 physicochemical features. The region
@@ -32,12 +32,23 @@ app.layout = html.Div([
     html.H1(app.title),
     dcc.Markdown(markdown_text),
     html.Label(["Select types of feeding strategies:", 
-        dcc.Dropdown('my-dropdown', options= opt_quality, value= opt_quality[0]['value'])]),
-dt.DataTable(id='my-table',
+        dcc.Dropdown('my-dropdown', options= opt_quality, value= opt_quality[0])
+    ]),
+    dt.DataTable(
+        id='my-table',
         columns=[{"name": i, "id": i} for i in df.columns],
         data= df.to_dict("records")
         )
 ])
+
+
+@app.callback(
+     Output('my-table', 'data'),
+     Input('my-dropdown', 'value'))
+def update_data(value):
+    filter = df['quality'] == value
+    return df[filter].to_dict("records")
+
 
 
 if __name__ == '__main__':
