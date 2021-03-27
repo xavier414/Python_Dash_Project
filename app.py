@@ -2,7 +2,7 @@ import dash
 from dash.dependencies import Input, Output, State
 import dash_html_components as html
 import dash_core_components as dcc
-import dash_table
+import dash_table as dt
 
 import pandas as pd
 
@@ -24,18 +24,21 @@ df_url = 'https://query.data.world/s/tmlt63lm3n3uzb2ujhlmkarlzoeo73'
 df = pd.read_csv(df_url)
 
 
-df_quality = df['quality'].dropna().sort_values().unique()
+df_quality = df['quality'].dropna().sort_values().unique().astype(str)
+opt_quality = [{'label': x + ' quality', 'value': x} for x in df_quality]
 
 
 app.layout = html.Div([
     html.H1(app.title),
     dcc.Markdown(markdown_text),
-    dash_table.DataTable(
-        id='my-table',
+    html.Label(["Select types of feeding strategies:", 
+        dcc.Dropdown('my-dropdown', options= opt_quality, value= opt_quality[0]['value'])]),
+dt.DataTable(id='my-table',
         columns=[{"name": i, "id": i} for i in df.columns],
         data= df.to_dict("records")
         )
 ])
+
 
 if __name__ == '__main__':
     app.server.run(debug=True)
