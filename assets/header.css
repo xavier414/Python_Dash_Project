@@ -1,0 +1,12 @@
+body {
+    font-family: sans-serif;
+    color: #b9ad8c;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: greenyellow
+}
+
+.app-body {
+    background-color: #ff7fb4;
+}
