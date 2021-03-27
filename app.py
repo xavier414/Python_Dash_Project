@@ -1,4 +1,5 @@
 import dash
+from dash.dependencies import Input, Output, State
 import dash_html_components as html
 import dash_core_components as dcc
 import dash_table
@@ -21,6 +22,9 @@ The physicochemical properties of the white wine variants that act as the input 
 '''
 df_url = 'https://query.data.world/s/tmlt63lm3n3uzb2ujhlmkarlzoeo73'
 df = pd.read_csv(df_url)
+
+
+df_quality = df['quality'].dropna().sort_values().unique()
 
 
 app.layout = html.Div([
