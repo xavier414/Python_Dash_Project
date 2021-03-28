@@ -4,7 +4,7 @@ import dash_core_components as dcc
 
 markdown_text = '''
 
-The dash app can be seen in the "app.py".
+The dash app can be seen in the "app.py" on my [Github](https://github.com/xavier414/Python_Dash_Project).
 
 This data set assesses the quality of 4898 white wine variants from the Portuguese Vinho Verde region based on 11 physicochemical features. The data was originally used in the paper [Modeling wine preferences by data mining from physicochemical properties](https://www.sciencedirect.com/science/article/abs/pii/S0167923609001377?via%3Dihub)
 by Cortez et al. (2009). The data set was posted originally on the [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/wine+quality), but was sourced in this project from [data.world.](https://data.world/food/wine-quality)
