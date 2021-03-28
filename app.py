@@ -7,12 +7,14 @@ import dash_table as dt
 
 import pandas as pd
 
-app = dash.Dash(__name__, title="White Wine Quality Dash")
+import json
+
+app = dash.Dash(__name__, title="White Wine Quality Dash - Volatile and Fixed Acidity")
 
 markdown_text = '''
 This data set assesses the quality of 4898 white wine variants from the Portuguese Vinho Verde region based on 11 physicochemical features. The region
 is in the northwest of Portugal as shown in the adjacent map to the left. The data was originally used in the paper [Modeling wine preferences by data mining from physicochemical properties](https://www.sciencedirect.com/science/article/abs/pii/S0167923609001377?via%3Dihub)
-by Cortez et al. (2009). The data set is posted on the [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/wine+quality), but was sourced in this project from [data.world.](https://data.world/food/wine-quality)  
+by Cortez et al. (2009). The data set is posted on the [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/wine+quality), but was sourced in this project from [data.world.](https://data.world/food/wine-quality)
 
 The physicochemical properties of the white wine variants that act as the input variables:
 - Fixed acidity
@@ -54,7 +56,7 @@ app.layout = html.Div([
                                        multi=True
                                        )
                           ]),
-              html.Div(id="log"),
+              html.Div(id="data", style={'display': 'none'}),
               dcc.RangeSlider(id="range",
                               min=min_fixed_acidity,
                               max=max_fixed_acidity,
@@ -76,15 +78,13 @@ app.layout = html.Div([
 
 @app.callback(
     Output('my-table', 'data'),
-    Input('range', 'value'),
-    Input('my-dropdown', 'value'),
+    Input('data', 'children'),
     State('tabs', 'value'))
-def update_data(range, values, tab):
+def update_table(data, tab):
     if tab != 'tab-t':
         return None
-    filter = df['quality'].isin(
-        list(values)) & df['fixed acidity'].between(range[0], range[1])
-    return df[filter].to_dict("records")
+    df = pd.read_json(data)
+    return df.to_dict("records")
 
 
 @app.callback(
@@ -101,14 +101,16 @@ def update_figure(range, values, tab):
 
 
 @app.callback(
-    Output('log', 'children'),
-    Input('range', 'value'))
-def update_div(v):
-    return '{}'.format(v)
+    Output('data', 'children'),
+     Input('range', 'value'),
+     Input('my-dropdown', 'value'))
+def update_data(range, values):
+    filter = df['quality'].isin(list(values)) & df['fixed acidity'].between(range[0], range[1])
+    return df[filter].to_json()
 
 
-@app.callback(Output('tabs-content', 'children'),
-              Input('tabs', 'value'))
+@ app.callback(Output('tabs-content', 'children'),
+               Input('tabs', 'value'))
 def update_tabs(v):
     if v == 'tab-g':
         return graph_tab
