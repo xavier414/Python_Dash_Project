@@ -27,26 +27,37 @@ df = pd.read_csv(df_url)
 df_quality = df['quality'].dropna().sort_values().unique().astype(str)
 opt_quality = [{'label': x + ' quality', 'value': x} for x in df_quality]
 
+colors = {
+     'background': '#7FDBFF',
+     'text': '#745D34',
+     'special': 'purple'
+ }
+
 
 app.layout = html.Div([
     html.H1(app.title),
     dcc.Markdown(markdown_text),
-    html.Label(["Select types of feeding strategies:", 
-        dcc.Dropdown('my-dropdown', options= opt_quality, value= opt_quality[0])
+    html.Label(["Select types quality of white wine:", 
+        dcc.Dropdown('my-dropdown', 
+            options= opt_quality, 
+            value= opt_quality[0]['value'],
+            multi=True
+        )
     ]),
     dt.DataTable(
         id='my-table',
         columns=[{"name": i, "id": i} for i in df.columns],
         data= df.to_dict("records")
-        )
-])
+    )
+],
+style={"backgroundColor": colors['background'], 'color': colors['text']})
 
 
 @app.callback(
      Output('my-table', 'data'),
      Input('my-dropdown', 'value'))
-def update_data(value):
-    filter = df['quality'] == value
+def update_data(values):
+    filter = df['quality'].isin(values)
     return df[filter].to_dict("records")
 
 
