@@ -77,8 +77,11 @@ app.layout = html.Div([
 @app.callback(
     Output('my-table', 'data'),
     Input('range', 'value'),
-    Input('my-dropdown', 'value'))
-def update_data(range, values):
+    Input('my-dropdown', 'value'),
+    State('tabs', 'value'))
+def update_data(range, values, tab):
+    if tab != 'tab-t':
+        return None
     filter = df['quality'].isin(
         list(values)) & df['fixed acidity'].between(range[0], range[1])
     return df[filter].to_dict("records")
@@ -87,8 +90,11 @@ def update_data(range, values):
 @app.callback(
     Output('my_graph', 'figure'),
     Input('range', 'value'),
-    Input('my-dropdown', 'value'))
-def update_figure(range, values):
+    Input('my-dropdown', 'value'),
+    State('tabs', 'value'))
+def update_figure(range, values, tab):
+    if tab != 'tab-g':
+        return None
     filter = df['quality'].isin(
         list(values)) & df['fixed acidity'].between(range[0], range[1])
     return px.scatter(df[filter], x="fixed acidity", y="volatile acidity", color="quality")
