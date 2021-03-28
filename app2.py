@@ -5,7 +5,9 @@ import dash_html_components as html
 import dash_core_components as dcc
 import dash_table
 import pandas as pd
+
 app = dash.Dash(__name__, title="2021 Dash Python App")
+
 markdown_text = '''
 ### Some references
 - [Dash HTML Components](https://dash.plotly.com/dash-html-components)
