@@ -10,7 +10,7 @@ import pandas as pd
 import json
 
 app = dash.Dash(
-    __name__, title="White Wine Quality Dash - Volatile and Fixed Acidity")
+    __name__, title="White Wine Quality Dash")
 
 markdown_text = '''
 This data set assesses the quality of 4898 white wine variants from the Portuguese Vinho Verde region based on 11 physicochemical features. The data was originally used in the paper [Modeling wine preferences by data mining from physicochemical properties](https://www.sciencedirect.com/science/article/abs/pii/S0167923609001377?via%3Dihub)
