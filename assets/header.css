@@ -1,12 +1,12 @@
 body {
     font-family: sans-serif;
-    color: #b9ad8c;
+    color: #646053;
 }
 
 h1, h2, h3, h4, h5, h6 {
-    color: greenyellow
+    color: rgb(184, 236, 105)
 }
 
 .app-body {
-    background-color: #ff7fb4;
+    background-color: #ceb6c0;
 }

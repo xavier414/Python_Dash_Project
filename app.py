@@ -28,11 +28,10 @@ df = pd.read_csv(df_url)
 df_quality = df['quality'].dropna().sort_values().unique().astype(str)
 opt_quality = [{'label': x + ' quality', 'value': x} for x in df_quality]
 
-colors = {
-    'background': '#EAFAF1',
-    'text': '#745D34',
-    'special': 'purple'
-}
+min_fixed_acidity = min(df['fixed acidity'].dropna())
+max_fixed_acidity = max(df['fixed acidity'].dropna())
+step_fixed_acidity = (max_fixed_acidity - min_fixed_acidity)/10
+
 
 table_tab = dt.DataTable(
     id='my-table',
@@ -55,7 +54,15 @@ app.layout = html.Div([
                                        multi=True
                                        )
                           ]),
-
+              html.Div(id="log"),
+              dcc.RangeSlider(id="range",
+                              min=min_fixed_acidity,
+                              max=max_fixed_acidity,
+                              step=step_fixed_acidity,
+                              marks={min_fixed_acidity + i * step_fixed_acidity: '{}'.format(
+                                  round(min_fixed_acidity + i * step_fixed_acidity, 2)) for i in range(10)},
+                              value=[min_fixed_acidity, max_fixed_acidity]
+                              ),
               dcc.Tabs(id="tabs", value='tab-t', children=[
                   dcc.Tab(label='Table', value='tab-t'),
                   dcc.Tab(label='Graph', value='tab-g'),
@@ -69,27 +76,37 @@ app.layout = html.Div([
 
 @app.callback(
     Output('my-table', 'data'),
+    Input('range', 'value'),
     Input('my-dropdown', 'value'))
-def update_data(values):
-    filter = df['quality'].isin(list(values))
+def update_data(range, values):
+    filter = df['quality'].isin(
+        list(values)) & df['fixed acidity'].between(range[0], range[1])
     return df[filter].to_dict("records")
 
 
 @app.callback(
     Output('my_graph', 'figure'),
+    Input('range', 'value'),
     Input('my-dropdown', 'value'))
-def update_figure(values):
-    filter = df['quality'].isin(list(values))
+def update_figure(range, values):
+    filter = df['quality'].isin(
+        list(values)) & df['fixed acidity'].between(range[0], range[1])
     return px.scatter(df[filter], x="fixed acidity", y="volatile acidity", color="quality")
+
+
+@app.callback(
+    Output('log', 'children'),
+    Input('range', 'value'))
+def update_div(v):
+    return '{}'.format(v)
 
 
 @app.callback(Output('tabs-content', 'children'),
               Input('tabs', 'value'))
-def render_content(tab):
-    if tab == 'tab-t':
-        return table_tab
-    elif tab == 'tab-g':
+def update_tabs(v):
+    if v == 'tab-g':
         return graph_tab
+    return table_tab
 
 
 if __name__ == '__main__':
