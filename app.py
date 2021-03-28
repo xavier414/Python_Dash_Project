@@ -40,7 +40,7 @@ table_tab = dt.DataTable(
     data=df.to_dict("records")
 )
 
-graph_tab = dcc.Graph(id="graph", figure=px.scatter(
+graph_tab = dcc.Graph(id="my_graph", figure=px.scatter(
     df, x="fixed acidity", y="volatile acidity", color="quality"))
 
 app.layout = html.Div([
@@ -71,7 +71,7 @@ app.layout = html.Div([
     Output('my-table', 'data'),
     Input('my-dropdown', 'value'))
 def update_data(values):
-    filter = df['quality'].isin(values)
+    filter = df['quality'].isin(list(values))
     return df[filter].to_dict("records")
 
 
@@ -79,7 +79,7 @@ def update_data(values):
     Output('my_graph', 'figure'),
     Input('my-dropdown', 'value'))
 def update_figure(values):
-    filter = df['quality'].isin(values)
+    filter = df['quality'].isin(list(values))
     return px.scatter(df[filter], x="fixed acidity", y="volatile acidity", color="quality")
 
 
