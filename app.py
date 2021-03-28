@@ -9,7 +9,8 @@ import pandas as pd
 
 import json
 
-app = dash.Dash(__name__, title="White Wine Quality Dash - Volatile and Fixed Acidity")
+app = dash.Dash(
+    __name__, title="White Wine Quality Dash - Volatile and Fixed Acidity")
 
 markdown_text = '''
 This data set assesses the quality of 4898 white wine variants from the Portuguese Vinho Verde region based on 11 physicochemical features. The region
@@ -34,6 +35,8 @@ min_fixed_acidity = min(df['fixed acidity'].dropna())
 max_fixed_acidity = max(df['fixed acidity'].dropna())
 step_fixed_acidity = (max_fixed_acidity - min_fixed_acidity)/10
 
+df_cols = [{"name": i, "id": i} for i in df.columns]
+
 
 table_tab = dt.DataTable(
     id='my-table',
@@ -41,8 +44,16 @@ table_tab = dt.DataTable(
     data=df.to_dict("records")
 )
 
-graph_tab = dcc.Graph(id="my_graph", figure=px.scatter(
-    df, x="fixed acidity", y="volatile acidity", color="quality"))
+graph_tab = html.Div([
+    dcc.Graph(id="my_graph",
+              figure=px.scatter(
+                  df, x="fixed acidity", y="volatile acidity", color="quality")
+              ),
+    dt.DataTable(id="selected_data",
+                 columns=df_cols
+
+                 )
+])
 
 app.layout = html.Div([
     html.Div([
@@ -95,15 +106,27 @@ def update_figure(data, tab):
     if tab != 'tab-g':
         return None
     dff = pd.read_json(data)
-    return px.scatter(dff, x="fixed acidity", y="volatile acidity", color="quality")
+    return px.scatter(dff, x="fixed acidity", y="volatile acidity", custom_data=["quality"], color="quality")
+
+
+@app.callback(
+    Output('selected_data', 'data'),
+    Input('my_graph', 'selectedData'))
+def display_selected_data(selectedData):
+    if selectedData is None:
+        return None
+    names = [o["customdata"][0] for o in selectedData["points"]]
+    filter = df['quality'].isin(names)
+    return df[filter].to_dict("records")
 
 
 @app.callback(
     Output('data', 'children'),
-     Input('range', 'value'),
-     Input('my-dropdown', 'value'))
+    Input('range', 'value'),
+    Input('my-dropdown', 'value'))
 def update_data(range, values):
-    filter = df['quality'].isin(list(values)) & df['fixed acidity'].between(range[0], range[1])
+    filter = df['quality'].isin(
+        list(values)) & df['fixed acidity'].between(range[0], range[1])
     return df[filter].to_json()
 
 
