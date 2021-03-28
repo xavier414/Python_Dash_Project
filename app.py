@@ -83,21 +83,19 @@ app.layout = html.Div([
 def update_table(data, tab):
     if tab != 'tab-t':
         return None
-    df = pd.read_json(data)
-    return df.to_dict("records")
+    dff = pd.read_json(data)
+    return dff.to_dict("records")
 
 
 @app.callback(
     Output('my_graph', 'figure'),
-    Input('range', 'value'),
-    Input('my-dropdown', 'value'),
+    Input('data', 'children'),
     State('tabs', 'value'))
-def update_figure(range, values, tab):
+def update_figure(data, tab):
     if tab != 'tab-g':
         return None
-    filter = df['quality'].isin(
-        list(values)) & df['fixed acidity'].between(range[0], range[1])
-    return px.scatter(df[filter], x="fixed acidity", y="volatile acidity", color="quality")
+    dff = pd.read_json(data)
+    return px.scatter(dff, x="fixed acidity", y="volatile acidity", color="quality")
 
 
 @app.callback(
